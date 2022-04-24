@@ -22,11 +22,12 @@ DrawPartyMenu_: ; 12cd2 (4:6cd2)
 	ld [H_AUTOBGTRANSFERENABLED],a
 	call ClearScreen
 	call UpdateSprites ; move sprites
-	callba LoadMonPartySpriteGfxWithLCDDisabled ; load pokemon icon graphics
+RedrawPartyMenu_ReloadSprites:
+	callba LoadPartyMonSprites ; load pokemon icon graphics
 
 RedrawPartyMenu_: ; 12ce3 (4:6ce3)
-	ld a,[wd07d]
-	cp a,$04
+	ld a,[wd07d] ;aka wPartyMenuTypeOrMessageID
+	cp a,$04 ;aka SWAP_MONS_PARTY_MENU
 	jp z,.printMessage
 	call ErasePartyMenuCursors
 	callba SendBlkPacket_PartyMenu ; loads some data to wcf2e
@@ -35,7 +36,7 @@ RedrawPartyMenu_: ; 12ce3 (4:6ce3)
 	xor a
 	ld c,a
 	ld [hPartyMonIndex],a
-	ld [wcf2d],a
+	ld [wcf2d],a ;aka wWhichPartyMenuHPBar
 .loop
 	ld a,[de]
 	cp a,$FF ; reached the terminator?
@@ -49,8 +50,8 @@ RedrawPartyMenu_: ; 12ce3 (4:6ce3)
 	call GetPartyMonName
 	pop hl
 	call PlaceString ; print the pokemon's name
-	callba WriteMonPartySpriteOAMByPartyIndex ; place the appropriate pokemon icon
-	ld a,[hPartyMonIndex]
+	callba ShowPartyMonSprite ; place the appropriate pokemon icon
+	ld a,[hPartyMonIndex] ; loop counter
 	ld [wWhichPokemon],a
 	inc a
 	ld [hPartyMonIndex],a
@@ -76,9 +77,9 @@ RedrawPartyMenu_: ; 12ce3 (4:6ce3)
 	inc hl
 .skipUnfilledRightArrow
 	ld a,[wd07d] ; menu type
-	cp a,$03
+	cp a,$03 ;aka TMHM_PARTY_MENU
 	jr z,.teachMoveMenu
-	cp a,$05
+	cp a,$05 ;aka EVO_STONE_PARTY_MENU
 	jr z,.evolutionStoneMenu
 	push hl
 	ld bc,14 ; 14 columns to the right
@@ -87,7 +88,7 @@ RedrawPartyMenu_: ; 12ce3 (4:6ce3)
 	call PrintStatusCondition
 	pop hl
 	push hl
-	ld bc,20 + 1 ; down 1 row and right 1 column
+	ld bc,20 + 1 ; 20 = SCREEN_WIDTH; down 1 row and right 1 column
 	ld a,[hFlags_0xFFF6]
 	set 0,a
 	ld [hFlags_0xFFF6],a
@@ -315,11 +316,11 @@ SetPartyMenuHealthBarColor: ; 12ec7 (4:6ec7)
 	ld hl, wcf1f
 	ld a, [wcf2d]
 	ld c, a
-	ld b, $0
+	ld b, 0
 	add hl, bc
 	call GetHealthBarColor
 	ld b, $fc
 	call GoPAL_SET
-	ld hl, wcf2d
+	ld hl, wcf2d ;aka wWhichPartyMenuHPBar
 	inc [hl]
 	ret

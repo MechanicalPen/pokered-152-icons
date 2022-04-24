@@ -597,23 +597,43 @@ Trade_AnimCircledMon: ; 414e8 (10:54e8)
 	ld a, [rBGP]
 	xor $3c ; make link cable flash
 	ld [rBGP], a
-	ld hl, wOAMBuffer + $02
+	; we either sub 2 or add 2 depending on odds or even
+	ld a, [H_DIVIDEND] ; hSwapTemp
+	inc a
+	ld [H_DIVIDEND], a
+	bit 0, a
+	ld hl, wOAMBuffer + $02 ; OAM tile id
 	ld de, $4
-	ld c, $14
-.loop
+	ld c, $4
+	ld b, 2 ; amount to increase the tile id by
+	jr nz, .loopMon
+	ld b, -2 ; amount to increase the tile id by
+.loopMon
+	ld a, [hl]
+	add b
+	ld [hl], a
+	add hl, de
+	dec c
+	jr nz, .loopMon
+	ld hl, wOAMBuffer + $04 + $04 + $04 + $04 + $02 ; OAM tile id and skip the mon.
+	ld de, $4
+	ld c, $10
+.loopCable
 	ld a, [hl]
 	xor $40
 	ld [hl], a
 	add hl, de
 	dec c
-	jr nz, .loop
+	jr nz, .loopCable
 	pop hl
 	pop bc
 	pop de
 	ret
 
 Trade_WriteCircledMonOAM: ; 41505 (10:5505)
-	callba WriteMonPartySpriteOAMBySpecies
+    xor a
+	ld [H_DIVIDEND], a ; hSwapTemp
+	callba LoadTradeMonSprite
 	call Trade_WriteCircleOAM
 
 Trade_AddOffsetsToOAMCoords: ; 41510 (10:5510)

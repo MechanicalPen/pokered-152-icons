@@ -6914,3 +6914,16 @@ RedFishingRodTiles:   INCBIN "gfx/red_fishingrod_tiles.2bpp"
 GreenFishingTilesFront: INCBIN "gfx/green_fishing_tile_front.2bpp"
 GreenFishingTilesBack:  INCBIN "gfx/green_fishing_tile_back.2bpp"
 GreenFishingTilesSide:  INCBIN "gfx/green_fishing_tile_side.2bpp"
+
+SECTION "Party Sprites 1", ROMX, BANK[$30]	
+PartyMonSprites1:	INCBIN "gfx/party/emiSprites0.2bpp"
+					INCBIN "gfx/party/emiSprites1.2bpp"
+					INCBIN "gfx/party/emiSprites2.2bpp"
+					INCBIN "gfx/party/emiSprites3.2bpp"
+					INCBIN "gfx/party/emiSprites4.2bpp"
+					INCBIN "gfx/party/emiSprites5.2bpp"
+SECTION "Party Sprites 2", ROMX, BANK[$31]
+PartyMonSprites2:	INCBIN "gfx/party/emiSprites6.2bpp"
+					INCBIN "gfx/party/emiSprites7.2bpp"
+					INCBIN "gfx/party/emiSprites8.2bpp"
+INCLUDE "engine/mon_party_sprites2.asm"

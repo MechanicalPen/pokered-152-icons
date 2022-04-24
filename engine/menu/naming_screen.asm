@@ -472,7 +472,7 @@ PrintNamingText: ; 68f8 (1:68f8)
 	ld a, [wcf91]
 	ld [wMonPartySpriteSpecies], a
 	push af
-	callba WriteMonPartySpriteOAMBySpecies
+	callba LoadNicknameMonSprite
 	pop af
 	ld [wd11e], a
 	call GetMonName

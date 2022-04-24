@@ -20,6 +20,7 @@ StartMenu_Pokemon: ; 130a9 (4:70a9)
 	xor a
 	ld [wMenuItemToSwap],a
 	ld [wd07d],a
+	callab ResetPartyAnimation
 	call GoBackToPartyMenu
 .checkIfPokemonChosen
 	jr nc,.chosePokemon
@@ -710,37 +711,79 @@ StartMenu_Option: ; 135f6 (4:75f6)
 	jp RedisplayStartMenu
 
 SwitchPartyMon: ; 13613 (4:7613)
+	;make sure the animation is reset.
+	push bc
+	callab ResetPartyAnimation
+	pop bc
+	; then swap
 	call SwitchPartyMon_Stats
 	ld a, [wWhichTrade] ; wWhichTrade
-	call SwitchPartyMon_OAM
+	call SSwitchPartyMon_ClearGfx
 	ld a, [wCurrentMenuItem] ; wCurrentMenuItem
-	call SwitchPartyMon_OAM
-	jp RedrawPartyMenu_
+	call SSwitchPartyMon_ClearGfx
+    call SwapPartyMonIcons
+    jp RedrawPartyMenu_
 
-SwitchPartyMon_OAM: ; 13625 (4:7625)
+SwapPartyMonIcons:
+    ld a, [wWhichTrade] ;wSwappedMenuItem
+    ld hl, wOAMBuffer
+    ld bc, 16
+    call AddNTimes ; add bc to hl, a times
+    inc hl ; add 2 to hl for tileid.
+    inc hl
+	push hl
+	pop de
+    ld a, [wCurrentMenuItem]
+    ld hl, wOAMBuffer
+    ld bc, 16
+    call AddNTimes ; add bc to hl, a times
+    inc hl ; add 2 to hl for tileid.
+    inc hl
+    ld c, 4 ; four tiles
+.swapMonOAMLoop
+    ld a, [hl]
+    ld [H_DIVIDEND], a ;hSwapTemp
+    ld a, [de]
+    ld [hl], a
+    ld a, [H_DIVIDEND] ;hSwapTemp
+    ld [de], a
+    ld a, 4 ; add 4 to get to the next tiles.
+rept 4
+    inc hl
+endr
+rept 4
+    inc de
+endr
+    dec c
+    jr nz, .swapMonOAMLoop
+    ret
+
+
+
+SSwitchPartyMon_ClearGfx: ; 13625 (4:7625)
 	push af
-	ld hl, wTileMap
-	ld bc, $28
+	hlCoord 0 ,0
+	ld bc, $28 ;SCREEN_WIDTH * 2
 	call AddNTimes
-	ld c, $28
-	ld a, $7f
-.asm_13633
+	ld c, $28 ;SCREEN_WIDTH * 2
+	ld a, " "
+.clearMonBGLoop ; clear the mon's row in the party menu
 	ld [hli], a
 	dec c
-	jr nz, .asm_13633
+	jr nz, .clearMonBGLoop
 	pop af
 	ld hl, wOAMBuffer
 	ld bc, $10
 	call AddNTimes
 	ld de, $4
 	ld c, e
-.asm_13645
+.clearMonOAMLoop
 	ld [hl], $a0
 	add hl, de
 	dec c
-	jr nz, .asm_13645
+	jr nz, .clearMonOAMLoop
 	call WaitForSoundToFinish
-	ld a, (SFX_02_58 - SFX_Headers_02) / 3
+	ld a, (SFX_02_58 - SFX_Headers_02) / 3 ;SFX_SWAP
 	jp PlaySound
 
 SwitchPartyMon_Stats: ; 13653 (4:7653)

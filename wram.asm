@@ -357,6 +357,10 @@ wBoostExpByExpAll:: ; cc5b
 wAnimationType:: ; cc5b
 ; values between 0-6. Shake screen horizontally, shake screen vertically, blink Pokemon...
 
+wMonPartySpritesSavedOAM:: ; cc5b
+; Saved copy of OAM for the first frame of the animation to make it easy to
+; flip back from the second frame.
+; $60 bytes
 wcc5b:: ds 1 ; these upcoming values below are miscellaneous storage values
 wcc5c:: ds 1 ; used in pokedex evaluation as well
 wcc5d:: ds 1 ; used in pokedex evaluation

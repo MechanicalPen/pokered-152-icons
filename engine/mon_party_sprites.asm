@@ -4,6 +4,20 @@ AnimatePartyMon_ForceSpeed1: ; 716f7 (1c:56f7)
 	ld b, a
 	inc a
 	jr GetAnimationSpeed
+	
+ResetPartyAnimation:
+	push bc
+	ld hl, $0
+	ld bc, 16
+	ld a, [wPartyCount]
+	call AddNTimes
+	push hl
+	pop bc
+	ld hl, wMonPartySpritesSavedOAM
+	ld de, wOAMBuffer
+	call CopyData
+	pop bc
+	ret
 
 ; wcf1f contains the party mon's health bar colors
 ; 0: green
@@ -41,12 +55,7 @@ GetAnimationSpeed: ; 7170a (1c:570a)
 	ld [wPartyMonAnimCounter], a
 	jp DelayFrame
 .resetSprites
-	push bc
-	ld hl, wcc5b
-	ld de, wOAMBuffer
-	ld bc, $60
-	call CopyData
-	pop bc
+	call ResetPartyAnimation
 	xor a
 	jr .incTimer
 .animateSprite
@@ -55,19 +64,7 @@ GetAnimationSpeed: ; 7170a (1c:570a)
 	ld bc, $10
 	ld a, [wCurrentMenuItem]
 	call AddNTimes
-	ld c, $40 ; amount to increase the tile id by
-	ld a, [hl]
-	cp $4 ; tile ID for SPRITE_BALL_M
-	jr z, .editCoords
-	cp $8 ; tile ID for SPRITE_HELIX
-	jr nz, .editTileIDS
-; SPRITE_BALL_M and SPRITE_HELIX only shake up and down
-.editCoords
-	dec hl
-	dec hl ; dec hl to the OAM y coord
-	ld c, $1 ; amount to increase the y coord by
-; otherwise, load a second sprite frame
-.editTileIDS
+	ld c, 2 ; amount to increase the tile id by
 	ld b, $4
 	ld de, $4
 .loop
@@ -86,7 +83,8 @@ GetAnimationSpeed: ; 7170a (1c:570a)
 ; that each frame lasts for green HP, yellow HP, and red HP in order.
 ; On the naming screen, the yellow HP speed is always used.
 PartyMonSpeeds: ; 71769 (1c:5769)
-	db $05,$10,$20
+	;db $05,$10,$20
+	db 8, 16, 32
 
 LoadMonPartySpriteGfx: ; 7176c (1c:576c)
 ; Load mon party sprite tile patterns into VRAM during V-blank.
@@ -132,7 +130,7 @@ LoadMonPartySpriteGfxWithLCDDisabled: ; 71791 (1c:5791)
 	ld hl, MonPartySpritePointers
 	ld a, $1c
 	ld bc, $0
-.asm_7179c
+.loop
 	push af
 	push bc
 	push hl
@@ -159,7 +157,7 @@ LoadMonPartySpriteGfxWithLCDDisabled: ; 71791 (1c:5791)
 	ld c, a
 	pop af
 	dec a
-	jr nz, .asm_7179c
+	jr nz, .loop
 	jp EnableLCD
 
 MonPartySpritePointers: ; 717c0 (1c:57c0)
@@ -315,7 +313,7 @@ WriteMonPartySpriteOAMByPartyIndex: ; 71868 (1c:5868)
 	add hl, de
 	ld a, [hl]
 	call GetPartyMonSpriteID
-	ld [wcd5b], a
+	ld [wcd5b], a ; aka wOAMBaseTile
 	call WriteMonPartySpriteOAM
 	pop bc
 	pop de
@@ -372,7 +370,7 @@ UnusedPartyMonSpriteFunction: ; 71890 (1c:5890)
 
 WriteMonPartySpriteOAM: ; 718c3 (1c:58c3)
 ; Write the OAM blocks for the first animation frame into the OAM buffer and
-; make a copy at wcc5b.
+; make a copy at wMonPartySpritesSavedOAM.
 	push af
 	ld c, $10
 	ld h, wOAMBuffer / $100
@@ -392,7 +390,7 @@ WriteMonPartySpriteOAM: ; 718c3 (1c:58c3)
 ; we can flip back to it from the second frame by copying it back.
 .makeCopy
 	ld hl, wOAMBuffer
-	ld de, wcc5b
+	ld de, wMonPartySpritesSavedOAM
 	ld bc, $60
 	jp CopyData
 
