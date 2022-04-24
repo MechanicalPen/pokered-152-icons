@@ -10,6 +10,8 @@ ResetPartyAnimation:
 	ld hl, $0
 	ld bc, 16
 	ld a, [wPartyCount]
+	and a
+	jr z, .doneReset ; nothing to do if 0 party members.
 	call AddNTimes
 	push hl
 	pop bc
@@ -17,6 +19,7 @@ ResetPartyAnimation:
 	ld de, wOAMBuffer
 	call CopyData
 	pop bc
+.doneReset
 	ret
 
 ; wcf1f contains the party mon's health bar colors
