@@ -18,8 +18,8 @@ ResetPartyAnimation:
 	ld hl, wMonPartySpritesSavedOAM
 	ld de, wOAMBuffer
 	call CopyData
-	pop bc
 .doneReset
+	pop bc
 	ret
 
 ; wcf1f contains the party mon's health bar colors
