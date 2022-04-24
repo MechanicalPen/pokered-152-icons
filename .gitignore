@@ -1,11 +1,35 @@
-CMakeLists.txt.user
-CMakeCache.txt
-CMakeFiles
-CMakeScripts
-Testing
-Makefile
-cmake_install.cmake
-install_manifest.txt
-compile_commands.json
-CTestTestfile.cmake
-_deps
+# precompiled python
+*.pyc
+
+# compiled object file
+*.o
+
+# no binaries
+*.exe
+
+# roms
+*.gbc
+*.gb
+
+# rgbds extras
+*.sym
+
+# converted image data
+*.2bpp
+*.1bpp
+*.pic
+
+# swap files for vim
+.*.swp
+
+# no data from extras/
+*.json
+
+# for any of the poor souls with save game files in their working directory
+*.sgm
+*.sav
+*.sys
+
+# for vim configuration
+# url: http://www.vim.org/scripts/script.php?script_id=441
+.lvimrc

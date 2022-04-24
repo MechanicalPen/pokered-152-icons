@@ -1,0 +1,30 @@
+Route2Mons:
+	db $19
+
+	IF DEF(_RED)
+		db 3,RATTATA
+		db 3,PIDGEY
+		db 4,RATTATA
+		db 4,NIDORAN_M
+		db 4,NIDORAN_F
+		db 5,WEEDLE
+		db 6,NIDORAN_M
+		db 6,NIDORAN_F
+		db 5,WEEDLE
+		db 6,WEEDLE
+	ENDC
+	IF DEF (_BLUE)
+		db 3,RATTATA
+		db 3,PIDGEY
+		db 4,RATTATA
+		db 4,NIDORAN_M
+		db 4,NIDORAN_F
+		db 5,CATERPIE
+		db 6,NIDORAN_M
+		db 6,NIDORAN_F
+		db 5,CATERPIE
+		db 6,CATERPIE
+	ENDC
+	
+	db $00
+
