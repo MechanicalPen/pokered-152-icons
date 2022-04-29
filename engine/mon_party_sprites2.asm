@@ -93,6 +93,7 @@ FillPartyMonOAM:
     pop bc
     pop de
     pop hl
+	ret
 
 ShowPartyMonSprite:
     push hl
