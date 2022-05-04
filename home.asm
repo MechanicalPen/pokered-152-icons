@@ -470,6 +470,7 @@ DrawPartyMenu:: ; 14d4 (0:14d4)
 	jr DrawPartyMenuCommon
 
 RedrawPartyMenu:: ; 14d9 (0:14d9)
+	callab ResetPartyAnimation
 	ld hl, RedrawPartyMenu_
 
 DrawPartyMenuCommon:: ; 14dc (0:14dc)

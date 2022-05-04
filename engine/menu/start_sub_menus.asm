@@ -20,7 +20,6 @@ StartMenu_Pokemon: ; 130a9 (4:70a9)
 	xor a
 	ld [wMenuItemToSwap],a
 	ld [wd07d],a
-	callab ResetPartyAnimation
 	call GoBackToPartyMenu
 .checkIfPokemonChosen
 	jr nc,.chosePokemon
